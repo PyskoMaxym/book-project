@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 
 interface Booking {
   id: number;
@@ -48,7 +48,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms, bookings, setBookings }) => 
     if(error) setError("");
   };
 
-  // Функція для перевірки конфліктів
+
   const hasConflict = (newBooking: Booking) => {
     return bookings.some(b => 
       b.id !== newBooking.id && 
