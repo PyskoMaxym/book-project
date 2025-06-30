@@ -125,21 +125,22 @@ const MeetingRooms: React.FC<MeetingRoomsProps> = ({
   };
 
   return (
-    <div className="p-4 max-w-screen-md mx-auto">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Meeting Rooms</h2>
-        <div className="flex gap-2">
+    <div className="p-6 max-w-4xl mx-auto bg-gradient-to-br from-indigo-50 to-white rounded-lg shadow-lg">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-extrabold text-indigo-800 tracking-wide">Meeting Rooms</h2>
+        <div className="flex gap-3">
           <button
-            className="px-3 py-1 bg-green-600 text-white rounded text-sm"
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 transition text-white font-semibold rounded shadow-md focus:outline-none focus:ring-2 focus:ring-green-400"
             onClick={() => {
               setEditingRoom({ id: 0, name: "", description: "" });
               setNewRoomMode(true);
+              setFormError(undefined);
             }}
           >
-            Add Room
+            + Add Room
           </button>
           <button
-            className="px-3 py-1 bg-red-600 text-white rounded text-sm"
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 transition text-white font-semibold rounded shadow-md focus:outline-none focus:ring-2 focus:ring-red-400"
             onClick={onLogout}  // <-- кнопка Logout
           >
             Logout
@@ -147,70 +148,89 @@ const MeetingRooms: React.FC<MeetingRoomsProps> = ({
         </div>
       </div>
 
-      {rooms.map(room => (
-        <div
-          key={room.id}
-          className="border p-2 rounded mb-4 text-sm bg-white shadow max-w-sm w-full mx-auto"
-        >
-          <h3 className="text-base font-semibold">{room.name}</h3>
-          <p className="text-gray-700">{room.description}</p>
-          <div className="flex gap-2 mt-2">
-            <button
-              className="px-2 py-1 bg-blue-500 text-white text-xs rounded"
-              onClick={() => {
-                setEditingRoom(room);
-                setNewRoomMode(false);
-              }}
-            >
-              Edit
-            </button>
-            <button
-              className="px-2 py-1 bg-green-500 text-white text-xs rounded"
-              onClick={() => {
-                setAddingBookingRoomId(room.id);
-                setEditingBooking({
-                  id: Date.now(),
-                  roomId: room.id,
-                  date: "",
-                  startTime: "",
-                  endTime: "",
-                  description: "",
-                });
-              }}
-            >
-              Add Booking
-            </button>
-            <button
-              className="px-2 py-1 bg-red-500 text-white text-xs rounded"
-              onClick={() => setDeletingRoomId(room.id)}
-            >
-              Delete
-            </button>
-          </div>
-          <div className="mt-3">
-            <h4 className="font-medium text-sm">Bookings:</h4>
-            {bookings
-              .filter(b => b.roomId === room.id)
-              .map(b => (
-                <div
-                  key={b.id}
-                  className="border p-1 rounded mt-1 bg-gray-50 text-xs"
+      {rooms.length === 0 && (
+        <p className="text-center text-gray-500 italic mb-8">No rooms yet. Please add one.</p>
+      )}
+
+      <div className="space-y-6">
+        {rooms.map(room => (
+          <div
+            key={room.id}
+            className="bg-white rounded-lg shadow-md p-5 border border-gray-200 hover:shadow-lg transition"
+          >
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold text-indigo-700">{room.name}</h3>
+              <div className="flex gap-2">
+                <button
+                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 transition text-white rounded text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  onClick={() => {
+                    setEditingRoom(room);
+                    setNewRoomMode(false);
+                    setFormError(undefined);
+                  }}
                 >
-                  <p>
-                    <strong>{b.date}</strong> {b.startTime} - {b.endTime}
-                  </p>
-                  <p className="text-gray-600">{b.description}</p>
-                  <button
-                    className="mt-1 px-2 py-0.5 bg-yellow-500 text-white rounded text-xs"
-                    onClick={() => setEditingBooking(b)}
+                  Edit
+                </button>
+                <button
+                  className="px-3 py-1 bg-green-600 hover:bg-green-700 transition text-white rounded text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                  onClick={() => {
+                    setAddingBookingRoomId(room.id);
+                    setEditingBooking({
+                      id: Date.now(),
+                      roomId: room.id,
+                      date: "",
+                      startTime: "",
+                      endTime: "",
+                      description: "",
+                    });
+                    setFormError(undefined);
+                  }}
+                >
+                  Add Booking
+                </button>
+                <button
+                  className="px-3 py-1 bg-red-600 hover:bg-red-700 transition text-white rounded text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+                  onClick={() => setDeletingRoomId(room.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+            <p className="mt-2 text-gray-600">{room.description || "No description"}</p>
+            <div className="mt-4">
+              <h4 className="font-semibold text-indigo-800 mb-2">Bookings:</h4>
+              {bookings.filter(b => b.roomId === room.id).length === 0 && (
+                <p className="text-gray-400 italic text-sm">No bookings yet</p>
+              )}
+              {bookings
+                .filter(b => b.roomId === room.id)
+                .map(b => (
+                  <div
+                    key={b.id}
+                    className="border border-gray-200 rounded p-3 mb-2 bg-indigo-50 hover:bg-indigo-100 transition cursor-pointer"
                   >
-                    Edit Booking
-                  </button>
-                </div>
-              ))}
+                    <p className="text-sm font-semibold text-indigo-700">
+                      <span>{b.date}</span>{" "}
+                      <span className="text-gray-600 font-normal">
+                        {b.startTime} - {b.endTime}
+                      </span>
+                    </p>
+                    <p className="text-gray-700 text-sm">{b.description || "No details"}</p>
+                    <button
+                      className="mt-2 px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-xs font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                      onClick={() => {
+                        setEditingBooking(b);
+                        setFormError(undefined);
+                      }}
+                    >
+                      Edit Booking
+                    </button>
+                  </div>
+                ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       {editingRoom && (
         <EditRoomModal
@@ -263,3 +283,4 @@ const MeetingRooms: React.FC<MeetingRoomsProps> = ({
 };
 
 export default MeetingRooms;
+  
